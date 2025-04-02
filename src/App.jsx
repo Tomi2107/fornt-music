@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-const API_URL = "https://mi-backend.onrender.com/api/songs"; // Cambia por la URL de tu backend
+const API_URL = "https://mi-backend.onrender.com/api/songs"; 
 
 function App() {
   const [songs, setSongs] = useState([]);
@@ -17,13 +17,11 @@ function App() {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-
     if (!selectedFile) {
       setError("Debes seleccionar un archivo.");
       return;
     }
 
-    // Validar formato de audio
     const validFormats = ["audio/mp3", "audio/wav", "audio/ogg", "audio/aac", "audio/flac"];
     if (!validFormats.includes(selectedFile.type)) {
       setError("Formato de archivo no permitido. Solo MP3, WAV, OGG, AAC y FLAC.");
@@ -31,7 +29,6 @@ function App() {
       return;
     }
 
-    // Validar tamaño máximo (10MB)
     if (selectedFile.size > 10 * 1024 * 1024) {
       setError("El archivo es demasiado grande (Máx: 10MB).");
       setFile(null);
@@ -60,7 +57,7 @@ function App() {
 
       if (!response.ok) {
         const errorMsg = await response.json();
-        setError(errorMsg.error || "Error desconocido al subir la canción.");
+        setError(errorMsg.error || "Error desconocido.");
         return;
       }
 
@@ -78,22 +75,10 @@ function App() {
   return (
     <div className="App">
       <h1>Mi Música</h1>
-
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      <input
-        type="text"
-        value={newSongTitle}
-        onChange={(e) => setNewSongTitle(e.target.value)}
-        placeholder="Título de la canción"
-      />
-
-      <input
-        type="file"
-        accept="audio/*"
-        onChange={handleFileChange}
-      />
-
+      <input type="text" value={newSongTitle} onChange={(e) => setNewSongTitle(e.target.value)} placeholder="Título de la canción" />
+      <input type="file" accept="audio/*" onChange={handleFileChange} />
       <button onClick={addSong}>Subir Canción</button>
 
       <ul>
