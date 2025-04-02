@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-const API_URL = "https://mi-backend.onrender.com/api/songs"; 
+const API_URL = "https://mi-backend.onrender.com/api/songs/storage"; 
 
 function App() {
   const [songs, setSongs] = useState([]);
@@ -10,11 +10,19 @@ function App() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(API_URL)
-      .then(res => res.json())
-      .then(setSongs)
-      .catch((err) => setError("Error al cargar canciones."));
+    fetchSongs();
   }, []);
+
+  const fetchSongs = async () => {
+    try {
+      const res = await fetch(API_URL);
+      if (!res.ok) throw new Error("Error al cargar canciones.");
+      const data = await res.json();
+      setSongs(data);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -26,7 +34,7 @@ function App() {
 
     const validFormats = ["audio/mpeg", "audio/wav", "audio/ogg", "audio/aac", "audio/flac"];
     if (!validFormats.includes(selectedFile.type)) {
-      setError("Formato de archivo no permitido. Solo MP3, WAV, OGG, AAC y FLAC.");
+      setError("Formato no permitido. Solo MP3, WAV, OGG, AAC y FLAC.");
       setFile(null);
       return;
     }
@@ -74,6 +82,22 @@ function App() {
     }
   };
 
+  const deleteSong = async (id) => {
+    try {
+      const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+
+      if (!response.ok) {
+        throw new Error("Error al eliminar la canción.");
+      }
+
+      setSongs(songs.filter((song) => song.id !== id));
+      alert("Canción eliminada con éxito.");
+    } catch (error) {
+      console.error("Error:", error);
+      setError("No se pudo eliminar la canción.");
+    }
+  };
+
   return (
     <div className="App">
       <h1>Mi Música</h1>
@@ -95,6 +119,7 @@ function App() {
           <li key={song.id}>
             <strong>{song.title}</strong>
             <button onClick={() => new Audio(song.url).play()}>Reproducir</button>
+            <button onClick={() => deleteSong(song.id)} style={{ marginLeft: "10px", color: "red" }}>Eliminar</button>
           </li>
         ))}
       </ul>
