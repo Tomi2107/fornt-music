@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 
 const API_BASE_URL = "https://back-music-3izh.onrender.com/api/canciones";
-const API_UPLOAD_URL = "https://back-music-3izh.onrender.com/api/songs/storage";
+const API_UPLOAD_URL = "https://back-music-3izh.onrender.com/api/songs";
 
 function App() {
   const [songs, setSongs] = useState([]);
