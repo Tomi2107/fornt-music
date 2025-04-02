@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-const API_URL = "https://mi-backend.onrender.com/api/songs/storage"; 
+const API_URL = "https://back-music-3izh.onrender.com/api/songs/storage"; 
 
 function App() {
   const [songs, setSongs] = useState([]);
