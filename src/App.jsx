@@ -5,7 +5,8 @@ const API_URL = "https://mi-backend.onrender.com/api/songs"; // Cambia por la UR
 
 function App() {
   const [songs, setSongs] = useState([]);
-  const [newSong, setNewSong] = useState("");
+  const [newSongTitle, setNewSongTitle] = useState("");
+  const [file, setFile] = useState(null);
   const [audio, setAudio] = useState(null);
 
   useEffect(() => {
@@ -14,16 +15,39 @@ function App() {
       .then(setSongs);
   }, []);
 
-  const addSong = () => {
-    const song = { title: newSong, artist: "Artista Ejemplo", genre: "Género Ejemplo", url: "/path/to/song.mp3" };
-    fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(song)
-    }).then(() => {
-      setSongs([...songs, song]);
-      setNewSong("");
-    });
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const addSong = async () => {
+    if (!file) {
+      alert("Por favor, selecciona un archivo de audio.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("title", newSongTitle);
+    formData.append("file", file);
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const newSong = await response.json();
+        setSongs([...songs, newSong]); // Agregar la nueva canción a la lista
+        setNewSongTitle("");
+        setFile(null);
+        alert("Canción subida con éxito");
+      } else {
+        alert("Error al subir la canción");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Hubo un problema al subir la canción.");
+    }
   };
 
   const playSong = (url) => {
@@ -35,27 +59,31 @@ function App() {
     setAudio(newAudio);
   };
 
-  const deleteSong = (id) => {
-    fetch(`${API_URL}/${id}`, { method: 'DELETE' })
-      .then(() => {
-        setSongs(songs.filter(song => song.id !== id));
-      });
+  const deleteSong = async (id) => {
+    await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+    setSongs(songs.filter(song => song.id !== id));
   };
 
   return (
     <div className="App">
       <h1>Mi Música</h1>
       <input
-        value={newSong}
-        onChange={(e) => setNewSong(e.target.value)}
-        placeholder="Añadir nueva canción"
+        type="text"
+        value={newSongTitle}
+        onChange={(e) => setNewSongTitle(e.target.value)}
+        placeholder="Título de la canción"
       />
-      <button onClick={addSong}>Agregar Canción</button>
+      <input
+        type="file"
+        accept="audio/*"
+        onChange={handleFileChange}
+      />
+      <button onClick={addSong}>Subir Canción</button>
 
       <ul>
-        {songs.map((song, idx) => (
-          <li key={idx}>
-            <strong>{song.title}</strong> - {song.artist}
+        {songs.map((song) => (
+          <li key={song.id}>
+            <strong>{song.title}</strong>
             <button onClick={() => playSong(song.url)}>Reproducir</button>
             <button onClick={() => deleteSong(song.id)}>Eliminar</button>
           </li>
