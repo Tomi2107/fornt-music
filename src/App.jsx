@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-const API_URL = "https://back-music-3izh.onrender.com/api/songs/storage"; 
+const API_BASE_URL = "https://back-music-3izh.onrender.com/api/canciones";
+const API_UPLOAD_URL = "https://back-music-3izh.onrender.com/api/songs/storage";
 
 function App() {
   const [songs, setSongs] = useState([]);
@@ -15,7 +16,7 @@ function App() {
 
   const fetchSongs = async () => {
     try {
-      const res = await fetch(API_URL);
+      const res = await fetch(API_BASE_URL);
       if (!res.ok) throw new Error("Error al cargar canciones.");
       const data = await res.json();
       setSongs(data);
@@ -26,19 +27,18 @@ function App() {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-
     if (!selectedFile) {
       setError("Debes seleccionar un archivo.");
       return;
     }
-
+    
     const validFormats = ["audio/mpeg", "audio/wav", "audio/ogg", "audio/aac", "audio/flac"];
     if (!validFormats.includes(selectedFile.type)) {
       setError("Formato no permitido. Solo MP3, WAV, OGG, AAC y FLAC.");
       setFile(null);
       return;
     }
-
+    
     if (selectedFile.size > 10 * 1024 * 1024) {
       setError("El archivo es demasiado grande (Máx: 10MB).");
       setFile(null);
@@ -60,7 +60,7 @@ function App() {
     formData.append("file", file);
 
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(API_UPLOAD_URL, {
         method: 'POST',
         body: formData,
       });
@@ -70,9 +70,8 @@ function App() {
         setError(errorMsg.error || "Error desconocido.");
         return;
       }
-
-      const newSong = await response.json();
-      setSongs([...songs, newSong]);
+      
+      await fetchSongs(); // 🔥 Recargar la lista 🔥
       setNewSongTitle("");
       setFile(null);
       alert("Canción subida con éxito");
@@ -84,13 +83,13 @@ function App() {
 
   const deleteSong = async (id) => {
     try {
-      const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+      const response = await fetch(`${API_BASE_URL}/${id}`, { method: 'DELETE' });
 
       if (!response.ok) {
         throw new Error("Error al eliminar la canción.");
       }
 
-      setSongs(songs.filter((song) => song.id !== id));
+      await fetchSongs(); // 🔥 Recargar la lista 🔥
       alert("Canción eliminada con éxito.");
     } catch (error) {
       console.error("Error:", error);
