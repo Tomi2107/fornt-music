@@ -12,17 +12,19 @@ function App() {
   useEffect(() => {
     fetch(API_URL)
       .then(res => res.json())
-      .then(setSongs);
+      .then(setSongs)
+      .catch((err) => setError("Error al cargar canciones."));
   }, []);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
+
     if (!selectedFile) {
       setError("Debes seleccionar un archivo.");
       return;
     }
 
-    const validFormats = ["audio/mp3", "audio/wav", "audio/ogg", "audio/aac", "audio/flac"];
+    const validFormats = ["audio/mpeg", "audio/wav", "audio/ogg", "audio/aac", "audio/flac"];
     if (!validFormats.includes(selectedFile.type)) {
       setError("Formato de archivo no permitido. Solo MP3, WAV, OGG, AAC y FLAC.");
       setFile(null);
@@ -77,8 +79,15 @@ function App() {
       <h1>Mi Música</h1>
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      <input type="text" value={newSongTitle} onChange={(e) => setNewSongTitle(e.target.value)} placeholder="Título de la canción" />
+      <input
+        type="text"
+        value={newSongTitle}
+        onChange={(e) => setNewSongTitle(e.target.value)}
+        placeholder="Título de la canción"
+      />
+      
       <input type="file" accept="audio/*" onChange={handleFileChange} />
+      
       <button onClick={addSong}>Subir Canción</button>
 
       <ul>
