@@ -7,7 +7,7 @@ function App() {
   const [songs, setSongs] = useState([]);
   const [newSongTitle, setNewSongTitle] = useState("");
   const [file, setFile] = useState(null);
-  const [audio, setAudio] = useState(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetch(API_URL)
@@ -16,12 +16,35 @@ function App() {
   }, []);
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+
+    if (!selectedFile) {
+      setError("Debes seleccionar un archivo.");
+      return;
+    }
+
+    // Validar formato de audio
+    const validFormats = ["audio/mp3", "audio/wav", "audio/ogg", "audio/aac", "audio/flac"];
+    if (!validFormats.includes(selectedFile.type)) {
+      setError("Formato de archivo no permitido. Solo MP3, WAV, OGG, AAC y FLAC.");
+      setFile(null);
+      return;
+    }
+
+    // Validar tamaño máximo (10MB)
+    if (selectedFile.size > 10 * 1024 * 1024) {
+      setError("El archivo es demasiado grande (Máx: 10MB).");
+      setFile(null);
+      return;
+    }
+
+    setError("");
+    setFile(selectedFile);
   };
 
   const addSong = async () => {
-    if (!file) {
-      alert("Por favor, selecciona un archivo de audio.");
+    if (!file || !newSongTitle.trim()) {
+      setError("Debes ingresar un título y seleccionar un archivo.");
       return;
     }
 
@@ -35,57 +58,49 @@ function App() {
         body: formData,
       });
 
-      if (response.ok) {
-        const newSong = await response.json();
-        setSongs([...songs, newSong]); // Agregar la nueva canción a la lista
-        setNewSongTitle("");
-        setFile(null);
-        alert("Canción subida con éxito");
-      } else {
-        alert("Error al subir la canción");
+      if (!response.ok) {
+        const errorMsg = await response.json();
+        setError(errorMsg.error || "Error desconocido al subir la canción.");
+        return;
       }
+
+      const newSong = await response.json();
+      setSongs([...songs, newSong]);
+      setNewSongTitle("");
+      setFile(null);
+      alert("Canción subida con éxito");
     } catch (error) {
       console.error("Error:", error);
-      alert("Hubo un problema al subir la canción.");
+      setError("Hubo un problema al subir la canción.");
     }
-  };
-
-  const playSong = (url) => {
-    if (audio) {
-      audio.pause();
-    }
-    const newAudio = new Audio(url);
-    newAudio.play();
-    setAudio(newAudio);
-  };
-
-  const deleteSong = async (id) => {
-    await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-    setSongs(songs.filter(song => song.id !== id));
   };
 
   return (
     <div className="App">
       <h1>Mi Música</h1>
+
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
       <input
         type="text"
         value={newSongTitle}
         onChange={(e) => setNewSongTitle(e.target.value)}
         placeholder="Título de la canción"
       />
+
       <input
         type="file"
         accept="audio/*"
         onChange={handleFileChange}
       />
+
       <button onClick={addSong}>Subir Canción</button>
 
       <ul>
         {songs.map((song) => (
           <li key={song.id}>
             <strong>{song.title}</strong>
-            <button onClick={() => playSong(song.url)}>Reproducir</button>
-            <button onClick={() => deleteSong(song.id)}>Eliminar</button>
+            <button onClick={() => new Audio(song.url).play()}>Reproducir</button>
           </li>
         ))}
       </ul>
