@@ -74,7 +74,7 @@ function App() {
     Object.entries(formData).forEach(([key, value]) => {
       form.append(key, value);
     });
-    form.append("file", file);
+    form.append("archivo", file);
 
     try {
     const response = await fetch(`${API_BASE_URL}/upload`, {
