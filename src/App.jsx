@@ -77,7 +77,7 @@ function App() {
     form.append("file", file);
 
     try {
-      const response = await fetch(API_BASE_URL, {
+    const response = await fetch(`${API_BASE_URL}/upload`, {
         method: 'POST',
         body: form,
       });
