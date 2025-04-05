@@ -83,10 +83,15 @@ function App() {
       });
 
       if (!response.ok) {
-        const errorMsg = await response.json();
-        setError(errorMsg.error || "Error desconocido.");
-        return;
-      }
+  const text = await response.text(); // lee como texto primero
+  try {
+    const errorMsg = JSON.parse(text); // intenta convertir a JSON
+    setError(errorMsg.error || "Error desconocido.");
+  } catch {
+    setError(text || "Error desconocido."); // si no es JSON, muestra el texto tal cual
+  }
+  return;
+}
 
       await fetchSongs();
       setFormData({ titulo: '', artista: '', album: '', año: '', duracion: '', genero: '' });
