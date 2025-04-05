@@ -45,15 +45,15 @@ function App() {
       return;
     }
 
-    const validFormats = ["audio/mpeg", "audio/wav", "audio/ogg", "audio/aac", "audio/flac"];
+    const validFormats = ["audio/mp3", "audio/mpeg", "audio/wav", "audio/ogg", "audio/aac", "audio/flac"];
     if (!validFormats.includes(selectedFile.type)) {
       setError("Formato no permitido. Solo MP3, WAV, OGG, AAC y FLAC.");
       setFile(null);
       return;
     }
 
-    if (selectedFile.size > 10 * 1024 * 1024) {
-      setError("El archivo es demasiado grande (Máx: 10MB).");
+    if (selectedFile.size > 1000 * 1024 * 1024) {
+      setError("El archivo es demasiado grande (Máx: 1000MB).");
       setFile(null);
       return;
     }
