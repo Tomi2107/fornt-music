@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
 const API_BASE_URL = "https://back-music-3izh.onrender.com/api/songs";
-const API_UPLOAD_URL = "https://back-music-3izh.onrender.com/api/songs";
 
 function App() {
   const [songs, setSongs] = useState([]);
@@ -65,6 +64,7 @@ function App() {
 
   const addSong = async () => {
     const { titulo, artista, album, año, duracion, genero } = formData;
+
     if (!titulo || !artista || !album || !año || !duracion || !genero || !file) {
       setError("Completa todos los campos y subí un archivo.");
       return;
@@ -77,7 +77,7 @@ function App() {
     form.append("file", file);
 
     try {
-      const response = await fetch(API_UPLOAD_URL, {
+      const response = await fetch(API_BASE_URL, {
         method: 'POST',
         body: form,
       });
@@ -91,7 +91,8 @@ function App() {
       await fetchSongs();
       setFormData({ titulo: '', artista: '', album: '', año: '', duracion: '', genero: '' });
       setFile(null);
-      alert("Canción subida con éxito");
+      setError("");
+      alert("🎉 Canción subida con éxito.");
     } catch (error) {
       console.error("Error:", error);
       setError("Hubo un problema al subir la canción.");
@@ -100,14 +101,16 @@ function App() {
 
   const deleteSong = async (id) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/${id}`, { method: 'DELETE' });
+      const response = await fetch(`${API_BASE_URL}/${id}`, {
+        method: 'DELETE',
+      });
 
       if (!response.ok) {
         throw new Error("Error al eliminar la canción.");
       }
 
       await fetchSongs();
-      alert("Canción eliminada con éxito.");
+      alert("🗑️ Canción eliminada con éxito.");
     } catch (error) {
       console.error("Error:", error);
       setError("No se pudo eliminar la canción.");
@@ -132,35 +135,42 @@ function App() {
       <h1>🎵 Mi Música</h1>
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {/* FORMULARIO */}
-      <input name="titulo" value={formData.titulo} onChange={handleInputChange} placeholder="Título" />
-      <input name="artista" value={formData.artista} onChange={handleInputChange} placeholder="Artista" />
-      <input name="album" value={formData.album} onChange={handleInputChange} placeholder="Álbum" />
-      <input name="año" type="number" value={formData.año} onChange={handleInputChange} placeholder="Año" />
-      <input name="duracion" value={formData.duracion} onChange={handleInputChange} placeholder="Duración (mm:ss)" />
-      <input name="genero" value={formData.genero} onChange={handleInputChange} placeholder="Género" />
-      <input type="file" accept="audio/*" onChange={handleFileChange} />
-      <button onClick={addSong}>Subir Canción</button>
+      <div className="form-container">
+        <input name="titulo" value={formData.titulo} onChange={handleInputChange} placeholder="Título" />
+        <input name="artista" value={formData.artista} onChange={handleInputChange} placeholder="Artista" />
+        <input name="album" value={formData.album} onChange={handleInputChange} placeholder="Álbum" />
+        <input name="año" type="number" value={formData.año} onChange={handleInputChange} placeholder="Año" />
+        <input name="duracion" value={formData.duracion} onChange={handleInputChange} placeholder="Duración (mm:ss)" />
+        <input name="genero" value={formData.genero} onChange={handleInputChange} placeholder="Género" />
+        <input type="file" accept="audio/*" onChange={handleFileChange} />
+        <button onClick={addSong}>📤 Subir Canción</button>
+      </div>
 
-      {/* LISTA */}
-      <ul>
+      <ul className="song-list">
         {songs.map((song) => (
-          <li key={song.id}>
-            <div style={{ flex: 1 }}>
+          <li key={song.id} className="song-item">
+            <div className="song-info">
               <strong>{song.titulo}</strong> - {song.artista} ({song.año})<br />
               <em>{song.album}</em> | {song.genero} | {song.duracion}
             </div>
-            <button onClick={() => handlePlay(song)}>
-              {currentSong?.url === song.url && isPlaying ? "⏸️ Pausar" : "▶️ Reproducir"}
-            </button>
-            <button onClick={() => deleteSong(song.id)}>🗑️</button>
+            <div className="song-controls">
+              <button onClick={() => handlePlay(song)}>
+                {currentSong?.url === song.url && isPlaying ? "⏸️ Pausar" : "▶️ Reproducir"}
+              </button>
+              <button onClick={() => deleteSong(song.id)}>🗑️ Eliminar</button>
+            </div>
           </li>
         ))}
       </ul>
 
-      {/* AUDIO */}
       {currentSong && (
-        <audio ref={audioRef} src={currentSong.url} onEnded={() => setIsPlaying(false)} controls style={{ marginTop: '1rem', width: '100%' }} />
+        <audio
+          ref={audioRef}
+          src={currentSong.url}
+          onEnded={() => setIsPlaying(false)}
+          controls
+          style={{ marginTop: '1rem', width: '100%' }}
+        />
       )}
     </div>
   );
