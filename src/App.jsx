@@ -9,7 +9,7 @@ function App() {
     titulo: '',
     artista: '',
     album: '',
-    año: '',
+    anio: '',
     duracion: '',
     genero: ''
   });
@@ -60,7 +60,7 @@ function App() {
       return;
     }
 
-    const validFormats = ["audio/mp3", "audio/mpeg", "audio/wav", "audio/ogg", "audio/aac", "audio/flac", "img/jpg"];
+    const validFormats = ["audio/mp3", "audio/mpeg", "audio/wav", "audio/ogg", "audio/aac", "audio/flac"];
     if (!validFormats.includes(selectedFile.type)) {
       setError("Formato no permitido. Solo MP3, WAV, OGG, AAC y FLAC.");
       setFile(null);
@@ -78,9 +78,9 @@ function App() {
   };
 
   const addSong = async () => {
-    const { titulo, artista, album, año, duracion, genero } = formData;
+    const { titulo, artista, album, anio, duracion, genero } = formData;
 
-    if (!titulo || !artista || !album || !año || !duracion || !genero || !file) {
+    if (!titulo || !artista || !album || !anio || !duracion || !genero || !file) {
       setError("Completa todos los campos y subí un archivo.");
       return;
     }
@@ -109,7 +109,7 @@ function App() {
       }
 
       await fetchSongs();
-      setFormData({ titulo: '', artista: '', album: '', año: '', duracion: '', genero: '' });
+      setFormData({ titulo: '', artista: '', album: '', anio: '', duracion: '', genero: '' });
       setFile(null);
       setError("");
       alert("🎉 Canción subida con éxito.");
@@ -156,7 +156,7 @@ function App() {
         <input name="titulo" value={formData.titulo} onChange={handleInputChange} placeholder="Título" />
         <input name="artista" value={formData.artista} onChange={handleInputChange} placeholder="Artista" />
         <input name="album" value={formData.album} onChange={handleInputChange} placeholder="Álbum" />
-        <input name="año" type="number" value={formData.año} onChange={handleInputChange} placeholder="Año" />
+        <input name="anio" type="number" value={formData.anio} onChange={handleInputChange} placeholder="Año" />
         <input name="duracion" value={formData.duracion} onChange={handleInputChange} placeholder="Duración (mm:ss)" />
         <input name="genero" value={formData.genero} onChange={handleInputChange} placeholder="Género" />
         <input type="file" accept="audio/*" onChange={handleFileChange} />
