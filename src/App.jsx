@@ -167,7 +167,7 @@ function App() {
         {songs.map((song) => (
           <li key={song.id} className="song-item">
             <div className="song-info">
-              <strong>{song.titulo}</strong> - {song.artista} ({song.año})<br />
+              <strong>{song.titulo}</strong> - {song.artista} ({song.anio})<br />
               <em>{song.album}</em> | {song.genero} | {song.duracion}
             </div>
             <div className="song-controls">
