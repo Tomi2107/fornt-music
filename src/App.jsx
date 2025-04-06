@@ -156,7 +156,7 @@ function App() {
         <input name="titulo" value={formData.titulo} onChange={handleInputChange} placeholder="Título" />
         <input name="artista" value={formData.artista} onChange={handleInputChange} placeholder="Artista" />
         <input name="album" value={formData.album} onChange={handleInputChange} placeholder="Álbum" />
-        <input name="anio" type="number" value={formData.anio} onChange={handleInputChange} placeholder="Año" />
+        <input name="anio" value={formData.anio} onChange={handleInputChange} placeholder="Año" />
         <input name="duracion" value={formData.duracion} onChange={handleInputChange} placeholder="Duración (mm:ss)" />
         <input name="genero" value={formData.genero} onChange={handleInputChange} placeholder="Género" />
         <input type="file" accept="audio/*" onChange={handleFileChange} />
