@@ -23,6 +23,21 @@ function App() {
     fetchSongs();
   }, []);
 
+  useEffect(() => {
+    const playAudio = async () => {
+      if (audioRef.current && currentSong && isPlaying) {
+        try {
+          await audioRef.current.play();
+        } catch (error) {
+          console.error("Error al reproducir automáticamente:", error);
+          setIsPlaying(false);
+        }
+      }
+    };
+
+    playAudio();
+  }, [currentSong, isPlaying]);
+
   const fetchSongs = async () => {
     try {
       const res = await fetch(API_BASE_URL);
@@ -77,21 +92,21 @@ function App() {
     form.append("archivo", file);
 
     try {
-    const response = await fetch(`${API_BASE_URL}/upload`, {
+      const response = await fetch(`${API_BASE_URL}/upload`, {
         method: 'POST',
         body: form,
       });
 
       if (!response.ok) {
-  const text = await response.text(); // lee como texto primero
-  try {
-    const errorMsg = JSON.parse(text); // intenta convertir a JSON
-    setError(errorMsg.error || "Error desconocido.");
-  } catch {
-    setError(text || "Error desconocido."); // si no es JSON, muestra el texto tal cual
-  }
-  return;
-}
+        const text = await response.text();
+        try {
+          const errorMsg = JSON.parse(text);
+          setError(errorMsg.error || "Error desconocido.");
+        } catch {
+          setError(text || "Error desconocido.");
+        }
+        return;
+      }
 
       await fetchSongs();
       setFormData({ titulo: '', artista: '', album: '', año: '', duracion: '', genero: '' });
@@ -129,9 +144,6 @@ function App() {
     } else {
       setCurrentSong(song);
       setIsPlaying(true);
-      setTimeout(() => {
-        audioRef.current.play();
-      }, 100);
     }
   };
 
