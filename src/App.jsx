@@ -119,9 +119,9 @@ function App() {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (docId) => {
   try {
-    const res = await fetch`${API_BASE_URL}/audio/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/songs/${docId}`, {
       method: "DELETE",
     });
 
