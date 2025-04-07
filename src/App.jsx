@@ -121,14 +121,16 @@ function App() {
 
   const handleDelete = async (docId) => {
   try {
-    const res = await fetch(`${API_BASE_URL}/songs/${docId}`, {
+    const res = await fetch(`${API_BASE_URL}/${docId}`, {
       method: "DELETE",
     });
 
     if (!res.ok) throw new Error("Error al eliminar la canción.");
     alert("Canción eliminada.");
+    fetchSongs(); // 👈 Volvemos a cargar la lista
   } catch (err) {
     console.error(err);
+    setError("Error al eliminar la canción.");
   }
 };
 
@@ -160,20 +162,20 @@ function App() {
       </div>
 
       <ul className="song-list">
-        {songs.map((song) => (
-          <li key={song.id} className="song-item">
-            <div className="song-info">
-              <strong>{song.titulo}</strong> - {song.artista} ({song.anio})<br />
-              <em>{song.album}</em> | {song.genero} | {song.duracion}
-            </div>
-            <div className="song-controls">
-              <button onClick={() => handlePlay(song)}>
-                {currentSong?.url === song.url && isPlaying ? "⏸️ Pausar" : "▶️ Reproducir"}
-              </button>
-              <button onClick={() => handleDelete(song.id)}>🗑️Eliminar</button>
-            </div>
-          </li>
-        ))}
+      {songs.map((song) => (
+        <li key={song.id} className="song-item">
+          <div className="song-info">
+            <strong>{song.titulo}</strong> - {song.artista} ({song.anio})<br />
+            <em>{song.album}</em> | {song.genero} | {song.duracion}
+          </div>
+          <div className="song-controls">
+            <button onClick={() => handlePlay(song)}>
+              {currentSong?.url === song.url && isPlaying ? "⏸️ Pausar" : "▶️ Reproducir"}
+            </button>
+            <button onClick={() => handleDelete(song.id)}>🗑️ Eliminar</button>
+          </div>
+        </li>
+      ))}
       </ul>
 
       {currentSong && (
