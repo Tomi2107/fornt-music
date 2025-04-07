@@ -170,7 +170,7 @@ function App() {
               <button onClick={() => handlePlay(song)}>
                 {currentSong?.url === song.url && isPlaying ? "⏸️ Pausar" : "▶️ Reproducir"}
               </button>
-              <button onClick={() => handleDelete(cancion.id)}>🗑️Eliminar</button>
+              <button onClick={() => handleDelete(song.id)}>🗑️Eliminar</button>
             </div>
           </li>
         ))}
