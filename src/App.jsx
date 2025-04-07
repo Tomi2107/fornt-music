@@ -119,23 +119,19 @@ function App() {
     }
   };
 
-  const deleteSong = async (id) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/${id}`, {
-        method: 'DELETE',
-      });
+  const handleDelete = async (id) => {
+  try {
+    const res = await fetch(`https://back-music-3izh.onrender.com/api/songs/${id}`, {
+      method: "DELETE",
+    });
 
-      if (!response.ok) {
-        throw new Error("Error al eliminar la canción.");
-      }
+    if (!res.ok) throw new Error("Error al eliminar la canción.");
+    alert("Canción eliminada.");
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-      await fetchSongs();
-      alert("🗑️ Canción eliminada con éxito.");
-    } catch (error) {
-      console.error("Error:", error);
-      setError("No se pudo eliminar la canción.");
-    }
-  };
 
   const handlePlay = (song) => {
     if (currentSong?.url === song.url && isPlaying) {
