@@ -121,7 +121,7 @@ function App() {
 
   const handleDelete = async (id) => {
   try {
-    const res = await fetch(`https://back-music-3izh.onrender.com/api/songs/audio/${id}`, {
+    const res = await fetch`${API_BASE_URL}/audio/${id}`, {
       method: "DELETE",
     });
 
